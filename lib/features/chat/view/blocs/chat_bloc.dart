@@ -12,20 +12,26 @@ part 'chat_bloc.freezed.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   List<Message> chat = [];
-  late Box localBox;
+  Box? localBox;
 
   ChatBloc() : super(const ChatState.success([])) {
-    _init();
-
     on<_FetchChat>(_fetchChat);
     on<_AddData>(_addData);
     on<_SendMessage>(_sendMessage);
+
+    add(const ChatEvent.fetchChat());
   }
 
   Future<void> _init() async {
-    localBox = await Hive.openBox('chatBox');
-    chat = localBox.get('messages', defaultValue: []).cast<Message>();
-    // ignore: invalid_use_of_visible_for_testing_member
+    localBox = Hive.isBoxOpen('chatbox')
+        ? Hive.box<Message>('chatbox')
+        : await Hive.openBox<Message>('chatbox');
+    chat = localBox!.get('messages', defaultValue: []).cast<Message>();
+  }
+
+  Future<void> _fetchChat(_FetchChat event, Emitter<ChatState> emit) async {
+    await _init();
+
     emit(ChatState.success(chat));
 
     WebSocketServices.getInstance(
@@ -45,16 +51,30 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       },
       cancelOnError: true,
       onError: (e) {
-        // ignore: invalid_use_of_visible_for_testing_member
         emit(ChatState.failure(e.toString()));
         _reconnect();
       },
       onDone: () {
-        // ignore: invalid_use_of_visible_for_testing_member
         emit(const ChatState.failure("Server bilan uzulish yuzaga keldi"));
         _reconnect();
       },
     );
+  }
+
+  void _addData(_AddData event, Emitter<ChatState> emit) async {
+    chat = [event.data, ...chat];
+    await localBox!.clear();
+    for (var m in chat) {
+      await localBox!.add(m);
+    }
+    emit(ChatState.success(chat));
+  }
+
+  void _sendMessage(_SendMessage event, Emitter<ChatState> emit) {
+    if (WebSocketServices.channel.closeCode == null) {
+      WebSocketServices.channel.sink.add(json.encode(event.data.toMap()));
+      add(ChatEvent.addData(event.data));
+    }
   }
 
   void _reconnect() {
@@ -63,19 +83,5 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         "wss://s14781.nyc1.piesocket.com/v3/1?api_key=kLgGoDV7ablppHkpGtqwvb1kGOru8svXMwpu47C3&notify_self=1",
       );
     });
-  }
-
-  void _addData(_AddData event, Emitter<ChatState> emit) {
-    chat = [event.data, ...chat];
-    localBox.put('messages', chat);
-    emit(ChatState.success(chat));
-  }
-
-  void _sendMessage(_SendMessage event, Emitter<ChatState> emit) {
-    WebSocketServices.channel.sink.add(json.encode(event.data.toMap()));
-  }
-
-  void _fetchChat(_FetchChat event, Emitter<ChatState> emit) {
-    emit(ChatState.success(chat));
   }
 }

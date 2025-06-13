@@ -4,24 +4,22 @@ import 'package:chat_app/features/chat/data/repositories/local_database.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketServices {
-  static late WebSocketChannel channel;
+  static WebSocketChannel? _channel;
 
   static void getInstance(String wss) {
-    channel = WebSocketChannel.connect(Uri.parse(wss));
-
-    channel.stream.listen((data) {
-      try {
-        final decoded = jsonDecode(data);
-        final msg = Message.fromMap(decoded);
-        DatabaseHelper.insertMessage(msg); 
-        print("Xabar saqlandi: ${msg.message}");
-      } catch (e) {
-        print("Xatolik: $e");
-      }
-    });
+    _channel = WebSocketChannel.connect(Uri.parse(wss));
+    _channel!.stream.listen(
+      (data) {
+        final msg = Message.fromMap(jsonDecode(data));
+        DatabaseHelper.insertMessage(msg);
+      },
+    );
   }
 
-  static void dispose() {
-    channel.sink.close();
+  static WebSocketChannel get channel {
+    if (_channel == null) {
+      throw Exception("WebSocket ulanishi yo'q. getInstance() chaqiring.");
+    }
+    return _channel!;
   }
 }
