@@ -26,7 +26,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     localBox = Hive.isBoxOpen('chatbox')
         ? Hive.box<Message>('chatbox')
         : await Hive.openBox<Message>('chatbox');
-    chat = localBox!.get('messages', defaultValue: []).cast<Message>();
+    chat = localBox!.values.toList().cast<Message>();
   }
 
   Future<void> _fetchChat(_FetchChat event, Emitter<ChatState> emit) async {
@@ -63,10 +63,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
   void _addData(_AddData event, Emitter<ChatState> emit) async {
     chat = [event.data, ...chat];
-    await localBox!.clear();
-    for (var m in chat) {
-      await localBox!.add(m);
-    }
+    await localBox!.add(event.data); 
     emit(ChatState.success(chat));
   }
 

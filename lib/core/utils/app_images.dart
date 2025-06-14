@@ -6,5 +6,6 @@ class AppImages {
 // svgs
   static const videoCall = "assets/svgs/Video Call.svg";
   static const phone = "assets/svgs/Shape.svg";
-
+  static const camera = "assets/svgs/camera.svg";
+  static const galos = "assets/svgs/galos.svg";
 }

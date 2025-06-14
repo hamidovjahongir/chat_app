@@ -1,5 +1,5 @@
 import 'package:chat_app/features/home/presentation/pages/home_screen.dart';
-import 'package:chat_app/profile/presentation/pages/profile_pages.dart';
+import 'package:chat_app/features/profile/presentation/pages/profile_pages.dart';
 import 'package:flutter/material.dart';
 
 class MyNavigationbar extends StatefulWidget {

@@ -26,7 +26,7 @@ class _ChatBodyState extends State<ChatBody> {
             height: double.infinity,
             width: double.infinity,
             child: ColoredBox(
-                color: Colors.grey,
+                color: Colors.white.withOpacity(0.01),
                 child: Stack(
                   children: [
                     Image.asset(

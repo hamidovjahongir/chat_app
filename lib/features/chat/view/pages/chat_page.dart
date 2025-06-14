@@ -31,7 +31,8 @@ class _ChatPageState extends State<ChatPage> {
                   child: TextFormField(
                 controller: textEditingController,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20)),
                 ),
               )),
               IconButton(
@@ -45,7 +46,7 @@ class _ChatPageState extends State<ChatPage> {
                   icon: Icon(Icons.send)),
             ],
           ).paddingOnly(
-            bottom: kToolbarHeight,
+            bottom: 20,
           ),
         ),
       ),
