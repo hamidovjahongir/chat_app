@@ -3,6 +3,7 @@ import 'package:chat_app/core/extensions/padding_extension.dart';
 import 'package:chat_app/core/services/permission_service.dart';
 import 'package:chat_app/core/utils/app_images.dart';
 import 'package:chat_app/features/chat/data/models/message.dart';
+import 'package:chat_app/features/chat/data/repositories/remote_send_file_db.dart';
 import 'package:chat_app/features/chat/view/widgets/chat_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +23,7 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController textEditingController = TextEditingController();
   final PermissionService permissionWithService = PermissionService();
   File? file;
+  RemoteSendFileDb remotedb = RemoteSendFileDb();
 
   Future<void> pickerImageFile() async {
     final picker = ImagePicker();
@@ -30,6 +32,9 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       file = File(pickImage.path);
     });
+    if (file != null) {
+      remotedb.sedData(file!);
+    }
   }
 
   Future<void> pickerCameraFile() async {
@@ -39,6 +44,9 @@ class _ChatPageState extends State<ChatPage> {
     setState(() {
       file = File(pickImage.path);
     });
+    if (file != null) {
+      remotedb.sedData(file!);
+    }
   }
 
   @override
