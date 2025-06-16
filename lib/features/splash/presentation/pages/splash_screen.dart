@@ -19,9 +19,12 @@ class _SplashScreenState extends State<SplashScreen> {
     Duration(seconds: 3);
 
     if (token == null || token.isEmpty) {
+      // Navigator.pushReplacement(
+      //     // ignore: use_build_context_synchronously
+      //     context, MaterialPageRoute(builder: (x) => LoginScreen()));
       Navigator.pushReplacement(
           // ignore: use_build_context_synchronously
-          context, MaterialPageRoute(builder: (x) => LoginScreen()));
+          context, MaterialPageRoute(builder: (x) => MyNavigationbar()));
     } else {
       Navigator.pushReplacement(
           // ignore: use_build_context_synchronously
